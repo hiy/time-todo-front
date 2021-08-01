@@ -9,22 +9,22 @@ const initialTodo = [
   {
     title: "英語の勉強",
     isDone: false,
-    elapsedTime: 10,
+    elapsedTime: 0,
   },
   {
     title: "線形代数の勉強",
     isDone: false,
-    elapsedTime: 20,
+    elapsedTime: 0,
   },
   {
     title: "tbos",
     isDone: false,
-    elapsedTime: 30,
+    elapsedTime: 0,
   },
   {
     title: "毎日英語",
     isDone: false,
-    elapsedTime: 40,
+    elapsedTime: 0,
   },
 ];
 
@@ -94,7 +94,7 @@ export default function Todo() {
       <h1>TODO {today}</h1>
       {todo.map((t, i) => {
         return (
-          <div>
+          <div key={i}>
             {isExecTodo() && i === execTodoIdx ? (<div>現在実行中のタスク</div>) : null}
             <TodoInput
               key={i}
