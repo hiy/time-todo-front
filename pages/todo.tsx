@@ -4,29 +4,44 @@ import { format } from 'date-fns'
 import addDays from 'date-fns/addDays'
 import TodoInput from '../components/TodoInput'
 import Timer, { TimeRecord } from '../components/Timer'
+import { Todo } from '../domains/todo/model'
 
-const initialTodo = [
-  {
-    title: "英語の勉強",
-    isDone: false,
-    elapsedTime: 0,
-  },
-  {
-    title: "線形代数の勉強",
-    isDone: false,
-    elapsedTime: 0,
-  },
-  {
-    title: "tbos",
-    isDone: false,
-    elapsedTime: 0,
-  },
-  {
-    title: "毎日英語",
-    isDone: false,
-    elapsedTime: 0,
-  },
-];
+export async function getStaticProps() {
+  // fetch list of posts
+  const response = await fetch(
+    'https://jsonplaceholder.typicode.com/posts?_page=1'
+  )
+  const postList = { 'aa': 'bb' } //await response.json()
+
+  const todoListData = [
+    {
+      title: "英語の勉強",
+      isDone: false,
+      elapsedTime: 0,
+    },
+    {
+      title: "線形代数の勉強",
+      isDone: false,
+      elapsedTime: 0,
+    },
+    {
+      title: "tbos",
+      isDone: false,
+      elapsedTime: 0,
+    },
+    {
+      title: "毎日英語",
+      isDone: false,
+      elapsedTime: 0,
+    },
+  ];
+
+  return {
+    props: {
+      todoListData,
+    },
+  }
+}
 
 const initialTimeRecord = {
   hours: '00',
@@ -35,8 +50,12 @@ const initialTimeRecord = {
   time: 0,
 }
 
-export default function Todo() {
-  const [todo, setTodo] = useState(initialTodo)
+type Props = {
+  todoListData: Todo[]
+}
+
+const TodoList: React.FC<Props> = ({ todoListData }) => {
+  const [todoList, setTodoList] = useState(todoListData)
   const [execTodoIdx, setExecTodoIdx] = useState<number | null>(null);
   const [isBeingMeasured, setIsBeingMeasured] = useState<boolean>(false);
   const [timeRecord, setTimeRecord] = useState<TimeRecord>(initialTimeRecord)
@@ -50,35 +69,35 @@ export default function Todo() {
       return
     }
     StartTimeMeasurement(idx)
-    todo[idx].isDone = false
-    setTodo([...todo])
+    todoList[idx].isDone = false
+    setTodoList([...todoList])
     setExecTodoIdx(idx)
   };
   const handleChangeTodo = (e: React.ChangeEvent<HTMLInputElement>, idx: number) => {
-    todo[idx].title = e.target.value
-    setTodo([...todo])
+    todoList[idx].title = e.target.value
+    setTodoList([...todoList])
   };
   const handleAddTodo = () => {
-    todo.push({
+    todoList.push({
       title: "",
       isDone: false,
       elapsedTime: 0,
     })
-    setTodo([...todo])
+    setTodoList([...todoList])
   };
 
   const StartTimeMeasurement = (todoIdx: number) => {
-    initialTimeRecord.time = todo[todoIdx].elapsedTime
+    initialTimeRecord.time = todoList[todoIdx].elapsedTime
     setTimeRecord({ ...initialTimeRecord })
     setIsBeingMeasured(true)
   }
 
   const StopTimeMeasurement = (todoIdx: number) => {
-    todo[todoIdx].elapsedTime = timeRecord.time
-    todo[todoIdx].isDone = true
+    todoList[todoIdx].elapsedTime = timeRecord.time
+    todoList[todoIdx].isDone = true
     setIsBeingMeasured(false)
 
-    setTodo([...todo])
+    setTodoList([...todoList])
   }
 
   const isExecTodo = () => {
@@ -92,7 +111,7 @@ export default function Todo() {
       </div>
 
       <h1>TODO {today}</h1>
-      {todo.map((t, i) => {
+      {todoList.map((t, i) => {
         return (
           <div key={i}>
             {isExecTodo() && i === execTodoIdx ? (<div>現在実行中のタスク</div>) : null}
@@ -121,3 +140,4 @@ export default function Todo() {
 }
 
 
+export default TodoList
