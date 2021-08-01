@@ -75,7 +75,7 @@ export default function Home() {
             例えば英語の勉強というタスクの場合、英語の勉強のタスク開始時にstartボタンをクリックして完了時にstopボタンを押すだけです。
             毎日のタスクは自動で計測され月別に可視化されます。
           </p>
-          <button><Link href="todo">使ってみる</Link> </button>
+          <button><Link href="/todo">使ってみる</Link> </button>
         </div>
 
         <div>
