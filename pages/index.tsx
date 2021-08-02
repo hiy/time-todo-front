@@ -15,7 +15,7 @@ export default function Home() {
       <main className={styles.main}>
         <div>
           <Link href="/">トップへ | </Link>
-          <Link href="/todo">TODO | </Link>
+          <Link href="/todoList">TODO | </Link>
           <Link href="/monthly">月間表示へ</Link>
         </div>
 

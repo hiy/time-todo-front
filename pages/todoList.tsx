@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import addDays from 'date-fns/addDays'
 import TodoInput from '../components/TodoInput'
 import Timer, { TimeRecord } from '../components/Timer'
 import { Todo } from '../domains/todo/model'
+
+const storageKey = 'todoList'
 
 export async function getStaticProps() {
   // fetch list of posts
@@ -54,25 +56,44 @@ type Props = {
   todoListData: Todo[]
 }
 
+const today = new Date();
+
 const TodoList: React.FC<Props> = ({ todoListData }) => {
   const [todoList, setTodoList] = useState(todoListData)
   const [execTodoIdx, setExecTodoIdx] = useState<number | null>(null);
   const [isBeingMeasured, setIsBeingMeasured] = useState<boolean>(false);
   const [timeRecord, setTimeRecord] = useState<TimeRecord>(initialTimeRecord)
 
-  const today = format(new Date(), 'Y/MM/dd')
+  useEffect(() => {
+    const todaysTodoList = findTodaysTodoList()
+    if (todaysTodoList) {
+      setTodoList(todaysTodoList);
+      return;
+    }
 
-  const handleClickExecButton = (idx: number) => {
+    const newTodaysTodoList = createTodaysTodoList();
+    if (newTodaysTodoList) {
+      setTodoList(newTodaysTodoList)
+      return
+    };
+
+    setTodoList([])
+    return () => { }
+  }, [])
+
+  const handleClickExecButton = (todoIdx: number) => {
     if (isExecTodo()) {
-      stopTodo(idx)
+      stopTodo(todoIdx)
       saveTodoList()
       return
     }
-    startTodo(idx)
+    startTodo(todoIdx)
+    saveTodoList()
   };
-  const handleChangeTodo = (e: React.ChangeEvent<HTMLInputElement>, idx: number) => {
-    todoList[idx].title = e.target.value
+  const handleChangeTodo = (e: React.ChangeEvent<HTMLInputElement>, todoIdx: number) => {
+    todoList[todoIdx].title = e.target.value
     setTodoList([...todoList])
+    saveTodoList()
   };
   const handleAddTodo = () => {
     todoList.push({
@@ -81,7 +102,13 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
       elapsedTime: 0,
     })
     setTodoList([...todoList])
+    saveTodoList()
   };
+  const handleDeleteTodo = (e: React.ChangeEvent<HTMLInputElement>, todoIdx: number) => {
+    todoList.splice(todoIdx, 1);
+    setTodoList([...todoList])
+    saveTodoList()
+  }
 
   const startTodo = (todoIdx: number) => {
     initialTimeRecord.time = todoList[todoIdx].elapsedTime
@@ -101,7 +128,42 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
   }
 
   const saveTodoList = () => {
+    const storageData = localStorage.getItem(storageKey) || "{}"
+    const list = JSON.parse(storageData)
+    list[format(today, 'YMMdd')] = todoList;
+    localStorage.setItem(storageKey, JSON.stringify(list));
+    console.log('saved')
+  }
 
+  const findTodaysTodoList = () => {
+    const storageData = localStorage.getItem(storageKey);
+    if (storageData) {
+      const list = JSON.parse(storageData)
+      if (typeof (list) === 'object') {
+        const todaysTodoList = list[format(today, 'YMMdd')]
+        if (todaysTodoList) return todaysTodoList;
+      }
+    }
+    return false
+  }
+
+  const createTodaysTodoList = () => {
+    const storageData = localStorage.getItem(storageKey);
+    if (storageData) {
+      const list = JSON.parse(storageData)
+      if (typeof (list) === 'object') {
+        const listedArray = Object.entries(list)
+        const latestDate = listedArray.sort()[listedArray.length - 1][0]
+        const newData = []
+        for (let data of list[latestDate]) {
+          data.isDone = false;
+          data.elapsedTime = 0;
+          newData.push(data)
+        }
+        return newData;
+      }
+    }
+    return false
   }
 
   const isExecTodo = () => {
@@ -112,11 +174,11 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
     <main>
       <div>
         <Link href="/">トップへ | </Link>
-        <Link href="/todo">TODO | </Link>
+        <Link href="/todoList">TODO | </Link>
         <Link href="/monthly">月間表示へ</Link>
       </div>
 
-      <h1>TODO {today}</h1>
+      <h1>TODO {format(today, 'Y/MM/dd')}</h1>
       {todoList.map((t, i) => {
         return (
           <div key={i}>
@@ -127,6 +189,7 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
               value={t.title}
               onChange={(e) => handleChangeTodo(e, i)}
               onClickExecButton={() => handleClickExecButton(i)}
+              onDelete={(e) => handleDeleteTodo(e, i)}
               isDone={t.isDone}
               isExec={isExecTodo() ? i === execTodoIdx : true} />
           </div>

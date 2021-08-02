@@ -43,17 +43,20 @@ const Timer: React.FC<Props> = (props) => {
     if (timer) clearInterval(timer);
   }
 
+  const zeroPadding = (num: number): string => {
+    return ('00' + num).slice(-2)
+  }
+
   const update = () => {
     const time = props.timeRecord.time + 1;
     const hours = Math.floor(time / 60 / 60);
     const minutes = Math.floor(time / 60 % 60);
     const seconds = Math.floor(time % 60);
-    props.timeRecord.hours = ('00' + hours).slice(-2)
-    props.timeRecord.minutes = ('00' + minutes).slice(-2)
-    props.timeRecord.seconds = ('00' + seconds).slice(-2)
+    props.timeRecord.hours = zeroPadding(hours)
+    props.timeRecord.minutes = zeroPadding(minutes)
+    props.timeRecord.seconds = zeroPadding(seconds)
     props.timeRecord.time = time
     props.setTimeRecord({ ...props.timeRecord });
-
   }
 
   return (
