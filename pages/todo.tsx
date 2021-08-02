@@ -62,16 +62,13 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
 
   const today = format(new Date(), 'Y/MM/dd')
 
-  const handleChangeExecTodo = (idx: number) => {
+  const handleClickExecButton = (idx: number) => {
     if (isExecTodo()) {
-      StopTimeMeasurement(idx)
-      setExecTodoIdx(null)
+      stopTodo(idx)
+      saveTodoList()
       return
     }
-    StartTimeMeasurement(idx)
-    todoList[idx].isDone = false
-    setTodoList([...todoList])
-    setExecTodoIdx(idx)
+    startTodo(idx)
   };
   const handleChangeTodo = (e: React.ChangeEvent<HTMLInputElement>, idx: number) => {
     todoList[idx].title = e.target.value
@@ -86,18 +83,25 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
     setTodoList([...todoList])
   };
 
-  const StartTimeMeasurement = (todoIdx: number) => {
+  const startTodo = (todoIdx: number) => {
     initialTimeRecord.time = todoList[todoIdx].elapsedTime
     setTimeRecord({ ...initialTimeRecord })
     setIsBeingMeasured(true)
+    todoList[todoIdx].isDone = false
+    setTodoList([...todoList])
+    setExecTodoIdx(todoIdx)
   }
 
-  const StopTimeMeasurement = (todoIdx: number) => {
+  const stopTodo = (todoIdx: number) => {
     todoList[todoIdx].elapsedTime = timeRecord.time
     todoList[todoIdx].isDone = true
     setIsBeingMeasured(false)
-
     setTodoList([...todoList])
+    setExecTodoIdx(null)
+  }
+
+  const saveTodoList = () => {
+
   }
 
   const isExecTodo = () => {
@@ -107,7 +111,9 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
   return (
     <main>
       <div>
-        <Link href="/">トップへ</Link>
+        <Link href="/">トップへ | </Link>
+        <Link href="/todo">TODO | </Link>
+        <Link href="/monthly">月間表示へ</Link>
       </div>
 
       <h1>TODO {today}</h1>
@@ -120,10 +126,9 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
               type="text"
               value={t.title}
               onChange={(e) => handleChangeTodo(e, i)}
-              onClickExecButton={() => handleChangeExecTodo(i)}
+              onClickExecButton={() => handleClickExecButton(i)}
               isDone={t.isDone}
               isExec={isExecTodo() ? i === execTodoIdx : true} />
-
           </div>
         )
       })}
@@ -138,6 +143,5 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
     </main>
   )
 }
-
 
 export default TodoList

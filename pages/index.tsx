@@ -14,6 +14,13 @@ export default function Home() {
 
       <main className={styles.main}>
         <div>
+          <Link href="/">トップへ | </Link>
+          <Link href="/todo">TODO | </Link>
+          <Link href="/monthly">月間表示へ</Link>
+        </div>
+
+
+        <div>
           [説明]
           <p>
             Time-TODOは日々のタスク消費時間を手軽に計測できるサービスです。

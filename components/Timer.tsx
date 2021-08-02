@@ -18,9 +18,9 @@ const Timer: React.FC<Props> = (props) => {
   const [timer, setTimer] = useState<NodeJS.Timer | null>(null)
 
   useEffect(() => {
-    console.log(props.isBeingMeasured)
     if (props.isBeingMeasured) {
-      start();
+      update()
+      start()
       return
     }
 
