@@ -4,7 +4,7 @@ import { format } from 'date-fns'
 import addDays from 'date-fns/addDays'
 import TodoInput from '../components/TodoInput'
 import Timer, { TimeRecord } from '../components/Timer'
-import { Todo } from '../domains/todo/model'
+import { Todo } from '../domains/todo/todo'
 
 const storageKey = 'todoList'
 
@@ -104,7 +104,7 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
     setTodoList([...todoList])
     saveTodoList()
   };
-  const handleDeleteTodo = (e: React.ChangeEvent<HTMLInputElement>, todoIdx: number) => {
+  const handleDeleteTodo = (todoIdx: number) => {
     todoList.splice(todoIdx, 1);
     setTodoList([...todoList])
     saveTodoList()
@@ -189,7 +189,7 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
               value={t.title}
               onChange={(e) => handleChangeTodo(e, i)}
               onClickExecButton={() => handleClickExecButton(i)}
-              onDelete={(e) => handleDeleteTodo(e, i)}
+              onDelete={() => handleDeleteTodo(i)}
               isDone={t.isDone}
               isExec={isExecTodo() ? i === execTodoIdx : true} />
           </div>
