@@ -8,7 +8,7 @@ import { Todo } from '../domain/todo/todo'
 import Footer from '../components/Footer'
 import Nav from '../components/Nav'
 import styled from 'styled-components'
-import { GrAdd } from 'react-icons/gr'
+import { GrAdd, GrCheckbox, GrCheckboxSelected } from 'react-icons/gr'
 
 const Container = styled.div`
   height: 100%;
@@ -23,6 +23,7 @@ const Main = styled.main`
   align-items: center;
 `
 const MainInner = styled.div`
+  padding: 0 3rem;
 `
 
 const AddTodo = styled.div`
@@ -31,20 +32,20 @@ const AddTodo = styled.div`
 
 const storageKey = 'todoList'
 
-export async function getStaticProps() {
-  // fetch list of posts
-  const response = await fetch(
-    'https://jsonplaceholder.typicode.com/posts?_page=1'
-  )
-  const postList = { 'aa': 'bb' } //await response.json()
+// export async function getStaticProps() {
+//   // fetch list of posts
+//   const response = await fetch(
+//     'https://jsonplaceholder.typicode.com/posts?_page=1'
+//   )
+//   const postList = { 'aa': 'bb' } //await response.json()
 
-  const todoListData = [{}];
-  return {
-    props: {
-      todoListData,
-    },
-  }
-}
+//   const todoListData = [{}];
+//   return {
+//     props: {
+//       todoListData,
+//     },
+//   }
+// }
 
 const initialTimeRecord = {
   hours: '00',
@@ -60,7 +61,7 @@ type Props = {
 const today = new Date();
 
 const TodoList: React.FC<Props> = ({ todoListData }) => {
-  const [todoList, setTodoList] = useState(todoListData)
+  const [todoList, setTodoList] = useState<Todo[]>([])
   const [execTodoIdx, setExecTodoIdx] = useState<number | null>(null);
   const [isBeingMeasured, setIsBeingMeasured] = useState<boolean>(false);
   const [timeRecord, setTimeRecord] = useState<TimeRecord>(initialTimeRecord)
@@ -91,6 +92,13 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
     startTodo(todoIdx)
     saveTodoList()
   };
+
+  const handleClickCheckBox = (todoIdx: number) => {
+    todoList[todoIdx].isDone = !todoList[todoIdx].isDone
+    setTodoList([...todoList])
+    saveTodoList()
+  };
+
   const handleChangeTodo = (e: React.ChangeEvent<HTMLInputElement>, todoIdx: number) => {
     todoList[todoIdx].title = e.target.value
     setTodoList([...todoList])
@@ -134,7 +142,6 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
     const list = JSON.parse(storageData)
     list[format(today, 'YMMdd')] = todoList;
     localStorage.setItem(storageKey, JSON.stringify(list));
-    console.log('saved')
   }
 
   const findTodaysTodoList = () => {
@@ -198,9 +205,11 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
                   value={t.title}
                   onChange={(e) => handleChangeTodo(e, i)}
                   onClickExecButton={() => handleClickExecButton(i)}
+                  onClickCheckBox={() => handleClickCheckBox(i)}
                   onDelete={() => handleDeleteTodo(i)}
                   isDone={t.isDone}
-                  isExec={isExecTodo() ? i === execTodoIdx : true} />
+                  isShow={i === execTodoIdx || execTodoIdx === null}
+                  isExec={isExecTodo() ? true : false} />
               </div>
             )
           })}

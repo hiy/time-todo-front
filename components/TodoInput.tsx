@@ -2,8 +2,18 @@
 import React from 'react'
 import styled from 'styled-components'
 import { MdClear } from 'react-icons/md'
+import { GrCheckbox, GrCheckboxSelected } from 'react-icons/gr'
 
-type InputProps = JSX.IntrinsicElements['input']
+interface TodoProps {
+  isExec: boolean;
+  isDone: boolean;
+  isShow: boolean;
+  onClickExecButton: Function;
+  onClickCheckBox: Function;
+  onDelete: Function;
+}
+
+type TodoInputProps = TodoProps & JSX.IntrinsicElements['input'];
 
 const InputStyle = styled.span`
   input {
@@ -22,6 +32,10 @@ const InputStyle = styled.span`
   }
 `
 
+const CheckBox = styled.span`
+  margin: 0 1rem;
+`
+
 const InputWrapper = styled.span`
   position: relative;
 `
@@ -32,36 +46,42 @@ const DeleteButton = styled.a`
   right: .3rem;
 `
 
-const ExecButton = styled.button`
+const ExecButton = styled.button<{ isExec: boolean }>`
+  border: ${(props) => props.isExec ? "1px solid red;" : null}
   margin-left: 1rem;
+
+  div {
+    padding: .5rem;
+    &:first-child { border-bottom: 1px solid gray; }
+  }
+
 `
+const TodoInput: React.FC<TodoInputProps> = (props) => {
 
-type TodoProps = InputProps & {
-  isExec: boolean
-  isDone: boolean
-  onClickExecButton: Function
-  onDelete: Function
-}
-
-const TodoInput: React.FC<TodoProps> = (props) => {
-
-  const { isDone, isExec, onDelete, onClickExecButton, ...inputProps } = props
+  const { isDone, isExec, onDelete, onClickExecButton, onClickCheckBox, isShow, ...inputProps } = props
 
   return (
     <div>
-      {isExec ? (
-        <div>
-          <InputWrapper>
-            {isDone ? (<span>　✔︎　</span>) : null}
-            <InputStyle>
-              <input type="text" {...inputProps} />
-            </InputStyle>
-            <DeleteButton onClick={() => onDelete()}><MdClear /></DeleteButton>
-          </InputWrapper>
-          <ExecButton onClick={() => onClickExecButton()}>Start | Stop</ExecButton>
-        </div>
+      {isShow ? (
+        <InputWrapper>
+          <CheckBox>
+            {isDone ? (<GrCheckboxSelected onClick={() => onClickCheckBox()} />) : ((<GrCheckbox onClick={() => onClickCheckBox()} />))}
+          </CheckBox>
+          <InputStyle>
+            <input type="text" {...inputProps} />
+          </InputStyle>
+          <DeleteButton onClick={() => onDelete()}><MdClear /></DeleteButton>
+        </InputWrapper>
       ) : null}
-    </div>
+
+      {isShow ? (
+        <ExecButton isExec={isExec} onClick={() => onClickExecButton()}>
+          <div>Start</div>
+          <div>Stop</div>
+        </ExecButton>) : null}
+
+
+    </div >
   )
 }
 
