@@ -52,11 +52,11 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
   const [timeRecord, setTimeRecord] = useState<TimeRecord>(initialTimeRecord)
 
   const query = useQuery("searchTodoList", async (): Promise<Todo[]> => {
-    return TodoUseCase.search()
+    return await TodoUseCase.search()
   });
 
-  const createMutation = useMutation(() => {
-    return TodoUseCase.create()
+  const createMutation = useMutation(async (): Promise<Todo[]> => {
+    return await TodoUseCase.create()
   })
 
   const updateMutation = useMutation((newTodoList: Todo[]) => {
@@ -69,8 +69,21 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
   }, [query.isSuccess, createMutation.isSuccess, updateMutation.isSuccess])
 
   useEffect(() => {
-    if (!query.isLoading && query.data) setTodoList(query.data)
+    if (!query.isLoading && query.data) {
+      if (query.data.length > 0) {
+        setTodoList(query.data)
+        return
+      }
+      createMutation.mutate()
+    }
   }, [query.isLoading, query.data])
+
+
+  useEffect(() => {
+    if (!createMutation.isLoading && createMutation.data) {
+      setTodoList(createMutation.data)
+    }
+  }, [createMutation.isLoading, createMutation.data])
 
   const handleClickExecButton = (todoIdx: number) => {
     if (isExecTodo()) {
