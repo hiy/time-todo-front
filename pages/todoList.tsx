@@ -4,11 +4,13 @@ import Head from 'next/head'
 import { format } from 'date-fns'
 import TodoInput from '../components/TodoInput'
 import Timer, { TimeRecord } from '../components/Timer'
-import { Todo } from '../domain/todo/todo'
+import { Todo } from '../src/domain/todo/todo'
 import Footer from '../components/Footer'
 import Nav from '../components/Nav'
 import styled from 'styled-components'
-import { GrAdd, GrCheckbox, GrCheckboxSelected } from 'react-icons/gr'
+import { GrAdd } from 'react-icons/gr'
+import TodoUseCase from '../provider'
+import { useMutation, useQuery } from 'react-query'
 
 const Container = styled.div`
   height: 100%;
@@ -29,24 +31,6 @@ const MainInner = styled.div`
 const AddTodo = styled.div`
   margin: 1rem 0;
 `
-
-const storageKey = 'todoList'
-
-// export async function getStaticProps() {
-//   // fetch list of posts
-//   const response = await fetch(
-//     'https://jsonplaceholder.typicode.com/posts?_page=1'
-//   )
-//   const postList = { 'aa': 'bb' } //await response.json()
-
-//   const todoListData = [{}];
-//   return {
-//     props: {
-//       todoListData,
-//     },
-//   }
-// }
-
 const initialTimeRecord = {
   hours: '00',
   minutes: '00',
@@ -66,44 +50,49 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
   const [isBeingMeasured, setIsBeingMeasured] = useState<boolean>(false);
   const [timeRecord, setTimeRecord] = useState<TimeRecord>(initialTimeRecord)
 
+  const query = useQuery("searchTodoList", async (): Promise<Todo[]> => {
+    return TodoUseCase.search()
+  });
+
+  const createMutation = useMutation(() => {
+    return TodoUseCase.create()
+  })
+
+  const updateMutation = useMutation((newTodoList: Todo[]) => {
+    return TodoUseCase.update(newTodoList)
+  })
+
+
   useEffect(() => {
-    const todaysTodoList = findTodaysTodoList()
-    if (todaysTodoList) {
-      setTodoList(todaysTodoList);
-      return;
-    }
+    // TODO メッセージ
+  }, [query.isSuccess, createMutation.isSuccess, updateMutation.isSuccess])
 
-    const newTodaysTodoList = createTodaysTodoList();
-    if (newTodaysTodoList) {
-      setTodoList(newTodaysTodoList)
-      return
-    };
-
-    setTodoList([])
-    return () => { }
-  }, [])
+  useEffect(() => {
+    if (!query.isLoading && query.data) setTodoList(query.data)
+  }, [query.isLoading, query.data])
 
   const handleClickExecButton = (todoIdx: number) => {
     if (isExecTodo()) {
       stopTodo(todoIdx)
-      saveTodoList()
+      updateMutation.mutate(todoList)
       return
     }
     startTodo(todoIdx)
-    saveTodoList()
+    updateMutation.mutate(todoList)
   };
 
   const handleClickCheckBox = (todoIdx: number) => {
     todoList[todoIdx].isDone = !todoList[todoIdx].isDone
     setTodoList([...todoList])
-    saveTodoList()
+    updateMutation.mutate(todoList)
   };
 
   const handleChangeTodo = (e: React.ChangeEvent<HTMLInputElement>, todoIdx: number) => {
     todoList[todoIdx].title = e.target.value
     setTodoList([...todoList])
-    saveTodoList()
+    updateMutation.mutate(todoList)
   };
+
   const handleAddTodo = () => {
     todoList.push({
       title: "",
@@ -111,13 +100,13 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
       elapsedTime: 0,
     })
     setTodoList([...todoList])
-    saveTodoList()
+    updateMutation.mutate(todoList)
   };
   const handleDeleteTodo = (todoIdx: number) => {
     if (!confirm('are you sure?')) return;
     todoList.splice(todoIdx, 1);
     setTodoList([...todoList])
-    saveTodoList()
+    updateMutation.mutate(todoList)
   }
 
   const startTodo = (todoIdx: number) => {
@@ -137,46 +126,13 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
     setExecTodoIdx(null)
   }
 
-  const saveTodoList = () => {
-    const storageData = localStorage.getItem(storageKey) || "{}"
-    const list = JSON.parse(storageData)
-    list[format(today, 'YMMdd')] = todoList;
-    localStorage.setItem(storageKey, JSON.stringify(list));
-  }
-
-  const findTodaysTodoList = () => {
-    const storageData = localStorage.getItem(storageKey);
-    if (storageData) {
-      const list = JSON.parse(storageData)
-      if (typeof (list) === 'object') {
-        const todaysTodoList = list[format(today, 'YMMdd')]
-        if (todaysTodoList) return todaysTodoList;
-      }
-    }
-    return false
-  }
-
-  const createTodaysTodoList = () => {
-    const storageData = localStorage.getItem(storageKey);
-    if (storageData) {
-      const list = JSON.parse(storageData)
-      if (typeof (list) === 'object') {
-        const listedArray = Object.entries(list)
-        const latestDate = listedArray.sort()[listedArray.length - 1][0]
-        const newData = []
-        for (let data of list[latestDate]) {
-          data.isDone = false;
-          data.elapsedTime = 0;
-          newData.push(data)
-        }
-        return newData;
-      }
-    }
-    return false
-  }
-
   const isExecTodo = () => {
     return execTodoIdx === 0 || execTodoIdx
+  }
+
+
+  if (query.isLoading) {
+    return <span>Loading...</span>
   }
 
   return (
