@@ -1,4 +1,4 @@
-import { Todo } from '../../../domain/todo'
+import { Todo } from './todo'
 
 export type TodoJson = {
   title: string;

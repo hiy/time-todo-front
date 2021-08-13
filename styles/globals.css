@@ -1,18 +1,86 @@
-/* html,
+html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: "Helvetica Neue",
+    Arial,
+    "Hiragino Kaku Gothic ProN",
+    "Hiragino Sans",
+    Meiryo,
+    sans-serif;
+  line-height: 1.7em;
   font-size: 10px;
 }
 
 a {
   color: inherit;
   text-decoration: none;
+  font-size: 1.6rem;
 }
+
+h1 > a {
+  font-size: inherit;
+}
+
+p { font-size: 1.6rem; }
 
 * {
   box-sizing: border-box;
 }
- */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+label {
+    color: #333333;
+}
+
+
+.button-xsmall {
+  font-size: 100%;
+}
+
+.button-small {
+  font-size: 120%;
+}
+
+.button-large {
+  font-size: 140%;
+}
+
+.button-xlarge {
+  font-size: 160%;
+}
+
+.button-success,
+.button-error,
+.button-warning,
+.button-secondary {
+    color: white;
+    border-radius: 4px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.button-success {
+    background: rgb(28, 184, 65);
+    /* this is a green */
+}
+
+.button-error {
+    background: rgb(202, 60, 60);
+    /* this is a maroon */
+}
+
+.button-warning {
+    background: rgb(223, 117, 20);
+    /* this is an orange */
+}
+
+.button-secondary {
+    background: rgb(66, 184, 221);
+    /* this is a light blue */
+}
+

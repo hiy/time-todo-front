@@ -1,4 +1,4 @@
-import { Todo } from '../../../domain/todo'
+import { Todo } from './todo'
 
 export interface TodoUseCaseInterface {
   search(): Promise<Todo[]>;

@@ -1,6 +1,6 @@
-import TodoRepositoryInterface from '../../../application/repository/todo/todoRepositoryInterface'
-import { Todo } from '../../../domain/todo'
-import { TodoListJson } from '../../../application/repository/todo/todoRepositoryInterface'
+import TodoRepositoryInterface from './todoRepositoryInterface'
+import { Todo } from './todo'
+import { TodoListJson } from './todoRepositoryInterface'
 import axios from 'axios'
 import { format } from 'date-fns'
 

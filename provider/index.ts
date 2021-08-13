@@ -1,5 +1,5 @@
-import { TodoUseCase as TodoUseCaseImpl } from "../src/application/usecase/todo/todoUsecase";
-import { TodoRepository as TodoRepositoryImpl } from "../src/interface/repository";
+import { TodoUseCase as TodoUseCaseImpl } from "../src/app/todo/todoUsecase";
+import { TodoRepository as TodoRepositoryImpl } from "../src/app/todo";
 
 const repository = new TodoRepositoryImpl()
 const useCase = new TodoUseCaseImpl(repository)

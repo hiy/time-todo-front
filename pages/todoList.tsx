@@ -4,7 +4,7 @@ import Head from 'next/head'
 import { format } from 'date-fns'
 import TodoInput from '../components/TodoInput'
 import Timer, { TimeRecord } from '../components/Timer'
-import { Todo } from '../src/domain/todo/todo'
+import { Todo } from '../src/app/todo'
 import Footer from '../components/Footer'
 import Nav from '../components/Nav'
 import styled from 'styled-components'
@@ -62,11 +62,6 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
   const updateMutation = useMutation((newTodoList: Todo[]) => {
     return TodoUseCase.update(newTodoList)
   })
-
-
-  useEffect(() => {
-    // TODO メッセージ
-  }, [query.isSuccess, createMutation.isSuccess, updateMutation.isSuccess])
 
   useEffect(() => {
     if (!query.isLoading && query.data) {

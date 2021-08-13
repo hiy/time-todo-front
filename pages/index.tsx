@@ -9,14 +9,45 @@ const Container = styled.div`
   padding: 0 1rem;
 `
 
-const Main = styled.main`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+const Splash = styled.div`
+  width: 60%;
+  height: 50%;
+  margin: auto;
+  position: absolute;
+  top: 100px; left: 0; bottom: 0; right: 0;
+  text-align: center;
+  text-transform: uppercase;
 
 `
+
+const SplashHead = styled.div`
+  font-size: 20px;
+  font-weight: bold;
+  border: 3px solid gray;
+  padding: 1em 1.6em;
+  font-weight: 100;
+  border-radius: 5px;
+  line-height: 1.6em;
+  margin-bottom: 3.2rem;
+  background: white;
+`
+
+
+const SplashContainer = styled.div`
+  z-index: 1;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  position: fixed !important;
+  background-image: url("/time-todo-front/jikan_tobu.png");
+  background-position: bottom;
+  background-repeat: repeat-x;
+`
+
+const Main = styled.main``;
+
 
 export default function Home() {
   return (
@@ -24,31 +55,23 @@ export default function Home() {
       <HtmlHead title={'Timer TODO'} />
 
       <Nav>
-        <h1><Link href="/">TimerTodo</Link></h1>
       </Nav>
 
+      <Main className=''>
+        <SplashContainer>
+          <Splash>
+            <SplashHead>
+              Timer-TODOは日々のタスク消費時間を計測できるサービスです。<br />
+              毎日のタスクは自動で月別に可視化されます。
+            </SplashHead>
 
-      <Main>
-        <div>
-          [説明]
-          <p>
-            Time-TODOは日々のタスク消費時間を手軽に計測できるサービスです。
-            使い方は日々のタスクを登録してタスク開始時にstartボタン、タスク完了時にstopボタンをクリックするだけです。
-            例えば英語の勉強というタスクの場合、英語の勉強のタスク開始時にstartボタンをクリックして完了時にstopボタンを押すだけです。
-            毎日のタスクは自動で計測され月別に可視化されます。
-          </p>
-          <Link href="/todoList">使ってみる</Link>
-        </div>
+            <Link href="/todoList"><span className="button-large pure-button pure-button-primary">使ってみる</span></Link>
 
-        <div>
-          [サインアップ・サインイン]
-          <p>
-            未登録でも3ヶ月までのデータを保存できます。
-            サインアップすることで3ヶ月以上のデータを保存することができます。
-          </p>
-        </div>
+            {/* <Link href="/todoList"><span className="pure-button pure-button-primary">Googleアカウントで登録</span></Link>
+            <p>サインアップすることでデータを保存することができます。</p> */}
+          </Splash>
+        </SplashContainer>
       </Main>
-      <Footer />
     </Container>
   )
 }

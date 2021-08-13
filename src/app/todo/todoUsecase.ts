@@ -1,13 +1,12 @@
-import { Todo } from '../../../domain/todo'
-import { TodoUseCaseInterface } from "../../../interface/usecase/todo/todoUsecaseInterface"
-import { TodoRepository } from "../../../interface/repository";
+import { Todo } from './todo'
+import { TodoUseCaseInterface } from "./todoUsecaseInterface"
+import { TodoRepository } from ".";
 
 export class TodoUseCase implements TodoUseCaseInterface {
   readonly todoRepository: TodoRepository
 
   constructor(repository: TodoRepository) {
     this.todoRepository = repository;
-    console.log('TodoUseCaseImpl initialized')
   }
 
   async search(): Promise<Todo[]> {
@@ -22,8 +21,3 @@ export class TodoUseCase implements TodoUseCaseInterface {
     return this.todoRepository.update(todoList)
   }
 }
-
-
-// const repository = new TodoRepository()
-// const usease = new TodoUseCase(repository)
-// usease.search()

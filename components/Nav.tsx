@@ -1,30 +1,41 @@
 import React from 'react'
 import styled from 'styled-components'
+import { FaGithub } from "react-icons/fa"
+import Link from 'next/link'
 
 const NavContent = styled.nav`
-  width: 100%;
-  height: 3rem;
-  border-top: 1px solid #eaeaea;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+
 `
 
 const NavInner = styled.div`
-  flex: 1;
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  justify-content:  space-between;
   align-items: center;
+  flex-grow: 1;
+  flex-direction: row
+`
+const GithubLink = styled.span`
+  margin-right: 1rem;
+`
+const IconWrapper = styled.div`
+  margin-top: .7rem;
 `
 
-
 const Nav: React.FC = (props) => {
-  return (<NavContent>
-    <NavInner>
-      {props.children}
-    </NavInner>
-  </NavContent>)
+  return (
+    <NavContent>
+      <NavInner className='pure-menu pure-menu-horizontal pure-menu-fixed'>
+        <h1 className='pure-menu-heading'><Link href="/">TimerTodo</Link></h1>
+        <div>
+          {props.children}
+          <IconWrapper>
+          <Link href="https://github.com/hiy/time-todo">
+            <GithubLink><FaGithub size={40}/></GithubLink>
+          </Link>
+          </IconWrapper>
+        </div>
+      </NavInner>
+    </NavContent>)
 }
 
 export default Nav
