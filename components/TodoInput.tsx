@@ -2,7 +2,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { MdClear } from 'react-icons/md'
-import { GrCheckbox, GrCheckboxSelected } from 'react-icons/gr'
+import { GrCheckbox, GrCheckboxSelected, IconContext } from 'react-icons/gr'
 
 interface TodoProps {
   isExec: boolean;
@@ -15,16 +15,22 @@ interface TodoProps {
 
 type TodoInputProps = TodoProps & JSX.IntrinsicElements['input'];
 
+const Container = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 2rem;
+`;
+
 const InputStyle = styled.span`
   input {
-	font-family: inherit;
-	font-size: inherit;
-	-webkit-padding: 0.4em 0;
-	padding: 0.4em;
-	margin: 0 0 0.5em 0;
-	box-sizing: border-box;
-	border: 1px solid #ccc;
-	border-radius: 2px;
+	  font-family: inherit;
+	  font-size: 2.5rem;
+	  -webkit-padding: 0.4em 0;
+	  padding: 0.4em;
+	  box-sizing: border-box;
+	  border: 1px solid #ccc;
+	  border-radius: 2px;
   }
 
   input&:disabled {
@@ -33,7 +39,9 @@ const InputStyle = styled.span`
 `
 
 const CheckBox = styled.span`
+  font-size: 2rem;
   margin: 0 1rem;
+  cursor: pointer;
 `
 
 const InputWrapper = styled.span`
@@ -42,35 +50,44 @@ const InputWrapper = styled.span`
 
 const DeleteButton = styled.a`
   position: absolute;
-  top: 0;
+  top: 1.3rem;
   right: .3rem;
+  font-size: 2.5rem;
+  cursor: pointer;
 `
 
-const ExecButton = styled.button<{ isExec: boolean }>`
-  border: ${(props) => props.isExec ? "1px solid red;" : null}
+const ExecButton = styled.a<{ isExec: boolean }>`
+  border: ${(props) => props.isExec ? "3px solid #00d08d;" : "3px solid #b5b5b5;"}
   margin-left: 1rem;
+  border-radius: 100%;
+  height: 6rem;
+  width: 6rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   div {
     padding: .5rem;
-    &:first-child { border-bottom: 1px solid gray; }
+    &:first-child { margin-top: 0; border-bottom: 1px solid gray; }
   }
+`;
 
-`
 const TodoInput: React.FC<TodoInputProps> = (props) => {
 
   const { isDone, isExec, onDelete, onClickExecButton, onClickCheckBox, isShow, ...inputProps } = props
 
   return (
-    <div>
+    <Container>
       {isShow ? (
         <InputWrapper>
           <CheckBox>
-            {isDone ? (<GrCheckboxSelected onClick={() => onClickCheckBox()} />) : ((<GrCheckbox onClick={() => onClickCheckBox()} />))}
+            {isDone ? (<GrCheckboxSelected style={{color: 'blue'}} onClick={() => onClickCheckBox()} />) : ((<GrCheckbox onClick={() => onClickCheckBox()} />))}
           </CheckBox>
           <InputStyle>
             <input type="text" {...inputProps} />
           </InputStyle>
-          <DeleteButton onClick={() => onDelete()}><MdClear /></DeleteButton>
+          { props.value ? (<DeleteButton onClick={() => onDelete()}><MdClear /></DeleteButton>) : null }
         </InputWrapper>
       ) : null}
 
@@ -78,10 +95,10 @@ const TodoInput: React.FC<TodoInputProps> = (props) => {
         <ExecButton isExec={isExec} onClick={() => onClickExecButton()}>
           <div>Start</div>
           <div>Stop</div>
-        </ExecButton>) : null}
-
-
-    </div >
+        </ExecButton>
+        ) : null
+      }
+    </Container>
   )
 }
 

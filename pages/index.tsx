@@ -42,7 +42,7 @@ const SplashContainer = styled.div`
   left: 0;
   position: fixed !important;
   background-image: url("/time-todo-front/jikan_tobu.png");
-  background-position: bottom;
+  background-position: center;
   background-repeat: repeat-x;
 `
 
@@ -53,9 +53,7 @@ export default function Home() {
   return (
     <Container>
       <HtmlHead title={'Timer TODO'} />
-
-      <Nav>
-      </Nav>
+      <Nav />
 
       <Main className=''>
         <SplashContainer>

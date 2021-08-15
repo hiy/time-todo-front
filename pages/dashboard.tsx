@@ -16,6 +16,7 @@ const Main = styled.main`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin: 10rem 0;
 `
 
 export default function Dashboard() {
@@ -25,8 +26,7 @@ export default function Dashboard() {
         <HtmlHead title={'Timer TODO'} />
 
         <Nav>
-          <h1><Link href="/">TimerTodo</Link></h1>
-          <Link href="/todoList">Todoリスト</Link>
+          <li><Link href="/todoList">Todoリスト</Link></li>
         </Nav>
 
         <div>結果をビジュアライズ</div>

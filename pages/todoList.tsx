@@ -24,9 +24,15 @@ const Main = styled.main`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin: 10rem 0;
 `
 const MainInner = styled.div`
   padding: 0 3rem;
+`
+
+const TodayTitle = styled.h2`
+  font-size: 3rem;
+  margin-bottom: 2rem;
 `
 
 const AddTodo = styled.div`
@@ -63,6 +69,13 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
     return TodoUseCase.update(newTodoList)
   })
 
+
+  const deleteTodo = (todoIdx: number) => {
+    todoList.splice(todoIdx, 1);
+    setTodoList([...todoList])
+    updateMutation.mutate(todoList)
+  }
+
   useEffect(() => {
     if (!query.isLoading && query.data) {
       if (query.data.length > 0) {
@@ -97,10 +110,24 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
   };
 
   const handleChangeTodo = (e: React.ChangeEvent<HTMLInputElement>, todoIdx: number) => {
+    if(!e.target.value) {
+      if (!confirm(`削除します。よろしいですか？`)) {
+        return;
+      } else {
+        deleteTodo(todoIdx);
+        return;
+      }
+    }
     todoList[todoIdx].title = e.target.value
     setTodoList([...todoList])
     updateMutation.mutate(todoList)
   };
+
+  const handleDeleteTodo = (todoIdx: number) => {
+    if(!todoList[todoIdx].title) { return }
+    if (!confirm(`${todoList[todoIdx].title}を削除します。よろしいですか？`)) return;
+    deleteTodo(todoIdx);
+  }
 
   const handleAddTodo = () => {
     todoList.push({
@@ -111,12 +138,6 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
     setTodoList([...todoList])
     updateMutation.mutate(todoList)
   };
-  const handleDeleteTodo = (todoIdx: number) => {
-    if (!confirm('are you sure?')) return;
-    todoList.splice(todoIdx, 1);
-    setTodoList([...todoList])
-    updateMutation.mutate(todoList)
-  }
 
   const startTodo = (todoIdx: number) => {
     initialTimeRecord.time = todoList[todoIdx].elapsedTime
@@ -148,13 +169,15 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
     <Container>
       <HtmlHead title={'Timer TODO'} />
       <Nav>
-        <h1><Link href="/">TimerTodo</Link></h1>
-        <Link href="/dashboard">ダッシュボード</Link>
+        <li>
+          <Link href="/dashboard">ダッシュボード</Link>
+        </li>
       </Nav>
 
       <Main>
         <MainInner>
-          <h2>{format(today, 'Y/MM/dd')}</h2>
+          <TodayTitle>{format(today, 'Y/MM/dd')}<hr /></TodayTitle>
+
           {todoList.map((t, i) => {
             return (
               <div key={i}>

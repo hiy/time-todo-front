@@ -8,23 +8,25 @@ const FooterContent = styled.footer`
   height: 100px;
   border-top: 1px solid #eaeaea;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
 `
-
 const GithubLink = styled.span`
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    flex-grow: 1;
+  margin-right: 1rem;
 `
+const IconWrapper = styled.div`
+  // margin-top: .7rem;
+`
+
 
 const Footer: React.FC = () => {
   return (
     <FooterContent>
-      <Link href="https://github.com/hiy/time-todo">
-        <GithubLink><FaGithub /> GitHub</GithubLink>
-      </Link>
+                <IconWrapper>
+          <Link href="https://github.com/hiy/time-todo">
+            <GithubLink><FaGithub size={40}/></GithubLink>
+          </Link>
+          </IconWrapper>
     </FooterContent>
   )
 }

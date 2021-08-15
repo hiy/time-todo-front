@@ -14,11 +14,18 @@ const NavInner = styled.div`
   flex-grow: 1;
   flex-direction: row
 `
-const GithubLink = styled.span`
-  margin-right: 1rem;
-`
-const IconWrapper = styled.div`
-  margin-top: .7rem;
+
+const RightWrapper = styled.ul`
+  padding-top: 0.7rem;
+  display: flex;
+  align-content: space-around;
+  flex-direction: row;
+  align-items: center;
+  list-style: none;
+
+  li {
+    margin: 0 1rem;
+  }
 `
 
 const Nav: React.FC = (props) => {
@@ -26,14 +33,9 @@ const Nav: React.FC = (props) => {
     <NavContent>
       <NavInner className='pure-menu pure-menu-horizontal pure-menu-fixed'>
         <h1 className='pure-menu-heading'><Link href="/">TimerTodo</Link></h1>
-        <div>
+        <RightWrapper>
           {props.children}
-          <IconWrapper>
-          <Link href="https://github.com/hiy/time-todo">
-            <GithubLink><FaGithub size={40}/></GithubLink>
-          </Link>
-          </IconWrapper>
-        </div>
+        </RightWrapper>
       </NavInner>
     </NavContent>)
 }
