@@ -1,6 +1,8 @@
+const isProduction = process.env.NODE_ENV === "production";
+
 module.exports = {
   reactStrictMode: true,
-  basePath: '/timer-todo-front',
+  basePath: isProduction ? '/timer-todo-front' : '',
   images: {
     loader: "imgix",
     path: "https://noop/",

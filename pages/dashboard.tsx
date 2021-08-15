@@ -105,8 +105,10 @@ const Main = styled.main`
 
 const today = new Date();
 
+type TodoChartData = { name: string, value: number, unit: string }
+
 export default function Dashboard() {
-  const [piData, setPiData] = useState<Todo[]>([])
+  const [piData, setPiData] = useState<TodoChartData[]>([])
 
   const query = useQuery("searchTodoList", async (): Promise<Todo[]> => {
     const year = format(today, 'Y')
@@ -128,8 +130,8 @@ export default function Dashboard() {
           tmp[datum.title] += datum.elapsedTime
         }
 
-        const result: Todo[] = Object.entries(tmp).map((entry) => {
-          return {title: entry[0], isDone: true, elapsedTime: entry[1]}
+        const result: TodoChartData[] = Object.entries(tmp).map((entry) => {
+          return {name: entry[0], value: entry[1], unit: '秒'}
         })
 
         console.log(result)
@@ -179,18 +181,23 @@ export default function Dashboard() {
             data={piData}
             cx="50%"
             cy="50%"
-            labelLine={false}
+            labelLine={true}
             outerRadius={180}
             fill="#8884d8"
-            dataKey="elapsedTime"
+            dataKey="value"
+            label
           >
+
 
             {piData.map((entry, index) => (
               <>
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        <Tooltip />
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               </>
             ))}
           </Pie>
+
+          <Tooltip />
         </PieChart>
       </Main>
     </Container>
