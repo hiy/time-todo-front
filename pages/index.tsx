@@ -46,6 +46,8 @@ const SplashContainer = styled.div`
   background-repeat: repeat-x;
 `
 
+console.log(process.env.basePath)
+
 const Main = styled.main``;
 
 
