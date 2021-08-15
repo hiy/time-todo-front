@@ -23,7 +23,7 @@ const Footer: React.FC = () => {
   return (
     <FooterContent>
                 <IconWrapper>
-          <Link href="https://github.com/hiy/time-todo">
+          <Link href="https://github.com/hiy/timer-todo">
             <GithubLink><FaGithub size={40}/></GithubLink>
           </Link>
           </IconWrapper>

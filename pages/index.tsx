@@ -41,7 +41,7 @@ const SplashContainer = styled.div`
   top: 0;
   left: 0;
   position: fixed !important;
-  background-image: url("/time-todo-front/jikan_tobu.png");
+  background-image: url("/timer-todo-front/jikan_tobu.png");
   background-position: center;
   background-repeat: repeat-x;
 `
