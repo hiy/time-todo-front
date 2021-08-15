@@ -2,7 +2,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { MdClear } from 'react-icons/md'
-import { GrCheckbox, GrCheckboxSelected, IconContext } from 'react-icons/gr'
+import { GrCheckbox, GrCheckboxSelected } from 'react-icons/gr'
 
 interface TodoProps {
   isExec: boolean;
