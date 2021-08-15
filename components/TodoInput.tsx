@@ -15,12 +15,11 @@ interface TodoProps {
 
 type TodoInputProps = TodoProps & JSX.IntrinsicElements['input'];
 
-const Container = styled.div`
+const Container = styled.div<{ isShow: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-top: 3rem;
-  margin-bottom: 3rem;
+  margin: ${(props) => props.isShow ? "3rem 0;" : "0;"}
 `;
 
 const InputStyle = styled.span`
@@ -79,7 +78,7 @@ const TodoInput: React.FC<TodoInputProps> = (props) => {
   const { isDone, isExec, onDelete, onClickExecButton, onClickCheckBox, isShow, ...inputProps } = props
 
   return (
-    <Container>
+    <Container isShow={isShow}>
       {isShow ? (
         <InputWrapper>
           <CheckBox>

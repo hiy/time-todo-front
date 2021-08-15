@@ -1,5 +1,5 @@
 import { Todo } from './todo'
-
+import {TodoSearchForm} from './todoSearchForm'
 export type TodoJson = {
   title: string;
   isDone: boolean
@@ -11,7 +11,7 @@ export type TodoListJson = {
 }
 
 export default interface TodoRepositoryInterface {
-  search(): Promise<Todo[]>;
+  search(form: TodoSearchForm): Promise<Todo[]>;
   create(): Promise<Todo[]>;
   update(todoList: Todo[]): Promise<Todo[]>;
 }

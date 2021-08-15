@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import Head from 'next/head'
 import { format } from 'date-fns'
 import TodoInput from '../components/TodoInput'
 import Timer, { TimeRecord } from '../components/Timer'
@@ -8,8 +7,7 @@ import { Todo } from '../src/app/todo'
 import Footer from '../components/Footer'
 import Nav from '../components/Nav'
 import styled from 'styled-components'
-import { GrAdd } from 'react-icons/gr'
-import TodoUseCase from '../provider'
+import TodoUseCase, { TodoSearchForm } from '../provider/todo'
 import { useMutation, useQuery } from 'react-query'
 import HtmlHead from '../components/Head'
 
@@ -28,6 +26,7 @@ const Main = styled.main`
 `
 const MainInner = styled.div`
   padding: 0 3rem;
+  max-width: 90%
 `
 
 const TodayTitle = styled.h2`
@@ -55,7 +54,13 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
   const [timeRecord, setTimeRecord] = useState<TimeRecord>(initialTimeRecord)
 
   const query = useQuery("searchTodoList", async (): Promise<Todo[]> => {
-    return await TodoUseCase.search()
+
+    const year = format(today, 'Y')
+    const month = format(today, 'MM')
+    const day = format(today, 'dd')
+
+    const form = new TodoSearchForm(year, month, day);
+    return await TodoUseCase.search(form)
   });
 
   const createMutation = useMutation(async (): Promise<Todo[]> => {
@@ -67,6 +72,12 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
   })
 
   const addEmptyTodo = () => {
+    const emptyTodos = todoList.filter((todo) => {
+      if(!todo.title) return true;
+      return false
+    })
+    if(emptyTodos.length === 0) {
+
     todoList.push({
       title: "",
       isDone: false,
@@ -74,6 +85,7 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
     })
     setTodoList([...todoList])
     updateMutation.mutate(todoList)
+  }
   };
 
   const deleteTodo = (todoIdx: number) => {
@@ -85,6 +97,7 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
   useEffect(() => {
     if (!query.isLoading && query.data) {
       if (query.data.length > 0) {
+        console.log(query.data.length)
         setTodoList(query.data)
         return
       }
@@ -95,16 +108,13 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
   useEffect(() => {
     if (!createMutation.isLoading && createMutation.data) {
       setTodoList(createMutation.data)
+      addEmptyTodo();
     }
   }, [createMutation.isLoading, createMutation.data])
 
   useEffect(() => {
     if(todoList.length > 0) {
-      const emptyTodos = todoList.filter((todo) => {
-        if(!todo.title) return true;
-        return false
-      })
-      if(emptyTodos.length === 0) addEmptyTodo();
+      addEmptyTodo();
     }
   }, [todoList])
 

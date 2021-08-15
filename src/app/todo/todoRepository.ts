@@ -3,12 +3,14 @@ import { Todo } from './todo'
 import { TodoListJson } from './todoRepositoryInterface'
 import axios from 'axios'
 import { format } from 'date-fns'
+import {TodoSearchForm} from './todoSearchForm'
 
 const storageKey = 'todoList'
 const today = new Date();
 
 export class TodoRepository implements TodoRepositoryInterface {
-  async search(): Promise<Todo[]> {
+
+  async search(form: TodoSearchForm): Promise<Todo[]> {
     const isSignIn = false
 
     if (isSignIn) {
@@ -19,10 +21,26 @@ export class TodoRepository implements TodoRepositoryInterface {
     } else {
       const storageData = localStorage.getItem(storageKey);
       if (storageData) {
-        const list = JSON.parse(storageData)
-        if (typeof (list) === 'object') {
-          const todaysTodoList: Todo[] = list[format(today, 'YMMdd')]
+        const list: { [key: string]: Todo[] } = JSON.parse(storageData)
+        if (typeof (list) === 'object' && form.isPresentYMD()) {
+          const todaysTodoList: Todo[] = list[`${form.year}${form.month}${form.day}`]
           if (todaysTodoList) return todaysTodoList;
+        } else if (form.isPresentYM()) {
+          const keys = Object.keys(list)
+          const currentMonths = keys.filter((key: string) => { return key.indexOf(`${form.year}${form.month}`) > -1 })
+          const currentMonthList = []
+          for (const m of currentMonths) {
+            currentMonthList.push(...list[m])
+          }
+          const tmp = currentMonthList.filter((todo: Todo) => {
+            if(todo.title) return true
+            return false
+          });
+          console.log(tmp)
+          return tmp;
+        }
+        else {
+
         }
       }
       return []

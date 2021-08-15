@@ -60,7 +60,7 @@ export default function Home() {
           <Splash>
             <SplashHead>
               <b>Timer-TODO</b>は日々のタスク消費時間を計測できるサービスです。<br />
-              毎日のタスクは自動で月別に可視化されます。
+              毎日のタスクは自動で可視化されます。
             </SplashHead>
 
             <Link href="/todoList"><span className="button-large pure-button pure-button-primary">使ってみる</span></Link>

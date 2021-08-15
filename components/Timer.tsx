@@ -1,4 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+
+const Time = styled.div`
+  font-size: 3rem;
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+
+`
+
 
 export type TimeRecord = {
   hours: string
@@ -60,15 +70,15 @@ const Timer: React.FC<Props> = (props) => {
   }
 
   return (
-    <div>
+    <>
       {props.isShow ? (
-        <div>
+        <Time>
           {props.timeRecord.hours}:
           {props.timeRecord.minutes}:
           {props.timeRecord.seconds}
-        </div>
+        </Time>
       ) : null}
-    </div>
+    </>
   )
 }
 
