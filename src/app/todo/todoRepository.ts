@@ -36,7 +36,6 @@ export class TodoRepository implements TodoRepositoryInterface {
             if(todo.title) return true
             return false
           });
-          console.log(tmp)
           return tmp;
         }
         else {

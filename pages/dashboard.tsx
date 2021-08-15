@@ -8,6 +8,7 @@ import { Todo, TodoChartData } from '../src/app/todo'
 import TodoUseCase, { TodoSearchForm } from '../provider/todo'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieLabel, PieChart, Pie, Sector, Cell, ResponsiveContainer } from 'recharts';
 import { format, addMonths } from 'date-fns'
+import Footer from '../components/Footer'
 
 const Title = styled.h2`
   font-size: 3rem;
@@ -85,6 +86,10 @@ const YearMonthControl = styled.div`
 const YearMonthButton = styled.span`
 `
 
+const ChartWrapper = styled.div`
+  display: flex;
+`
+
 export default function Dashboard() {
   const [piData, setPiData] = useState<TodoChartData[]>([]);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
@@ -116,7 +121,7 @@ export default function Dashboard() {
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
     return (
-      <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+      <text key={index} x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
         {`${piData[index].name} ${(percent * 100).toFixed(0)}%`}
       </text>
     );
@@ -126,14 +131,11 @@ export default function Dashboard() {
 
   return (
     <Container>
-
       <Main>
         <HtmlHead title={'Timer TODO'} />
-
         <Nav>
           <li><Link href="/todoList">Todoリスト</Link></li>
         </Nav>
-
         <Title>{format(currentDate, 'Y/MM')}<hr /></Title>
         <YearMonthControl>
           <YearMonthButton className='pure-button' onClick={() => setCurrentDate(addMonths(currentDate, -1))}>前月へ</YearMonthButton>
@@ -141,51 +143,47 @@ export default function Dashboard() {
         </YearMonthControl>
 
         {piData.length === 0 ? (<p>データがありません。</p>) : (
-<div>
-<LineChart
-width={500}
-height={300}
-data={data}
-margin={{
-  top: 5,
-  right: 30,
-  left: 20,
-  bottom: 5,
-}} >
-<CartesianGrid strokeDasharray="3 3" />
-<XAxis dataKey="name" />
-<YAxis />
-<Tooltip />
-<Legend />
-<Line type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} />
-<Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-</LineChart>
+        <ChartWrapper>
+          <LineChart
+            width={500}
+            height={300}
+            data={data}
+            margin={{
+              top: 5,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }} >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} />
+            <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+          </LineChart>
 
-<PieChart width={500} height={400}>
-<Pie
-  data={piData}
-  cx="50%"
-  cy="50%"
-  labelLine={false}
-  outerRadius={180}
-  fill="#8884d8"
-  dataKey="value"
-  label={renderCustomizedLabel}
->
-  {piData.map((entry, index) => (
-    <>
-      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} >
-      </Cell>
-    </>
-  ))}
-</Pie>
-<Tooltip />
-</PieChart>
-</div>
+          <PieChart width={500} height={400}>
+            <Pie
+              data={piData}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              outerRadius={180}
+              fill="#8884d8"
+              dataKey="value"
+              label={renderCustomizedLabel}
+            >
+              {piData.map((entry, index) =>
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              )}
+            </Pie>
+            <Tooltip />
+          </PieChart>
+        </ChartWrapper>
         ) }
-
-
       </Main>
+      <Footer />
     </Container>
   )
 }

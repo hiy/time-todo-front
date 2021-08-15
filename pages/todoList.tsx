@@ -67,8 +67,8 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
     return await TodoUseCase.create()
   })
 
-  const updateMutation = useMutation((newTodoList: Todo[]) => {
-    return TodoUseCase.update(newTodoList)
+  const updateMutation = useMutation(async (newTodoList: Todo[]) => {
+    return await TodoUseCase.update(newTodoList)
   })
 
   const addEmptyTodo = () => {
@@ -94,10 +94,10 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
     updateMutation.mutate(todoList)
   }
 
+
   useEffect(() => {
     if (!query.isLoading && query.data) {
       if (query.data.length > 0) {
-        console.log(query.data.length)
         setTodoList(query.data)
         return
       }
@@ -108,7 +108,6 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
   useEffect(() => {
     if (!createMutation.isLoading && createMutation.data) {
       setTodoList(createMutation.data)
-      addEmptyTodo();
     }
   }, [createMutation.isLoading, createMutation.data])
 
