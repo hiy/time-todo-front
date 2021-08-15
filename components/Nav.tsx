@@ -32,7 +32,7 @@ const Nav: React.FC = (props) => {
   return (
     <NavContent>
       <NavInner className='pure-menu pure-menu-horizontal pure-menu-fixed'>
-        <h1 className='pure-menu-heading'><Link href="/">TimerTodo</Link></h1>
+        <h1 className='pure-menu-heading'><Link href="/">Timer-Todo</Link></h1>
         <RightWrapper>
           {props.children}
         </RightWrapper>

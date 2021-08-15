@@ -59,7 +59,7 @@ export default function Home() {
         <SplashContainer>
           <Splash>
             <SplashHead>
-              Timer-TODOは日々のタスク消費時間を計測できるサービスです。<br />
+              <b>Timer-TODO</b>は日々のタスク消費時間を計測できるサービスです。<br />
               毎日のタスクは自動で月別に可視化されます。
             </SplashHead>
 

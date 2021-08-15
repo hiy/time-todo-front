@@ -19,7 +19,8 @@ const Container = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
 `;
 
 const InputStyle = styled.span`
@@ -60,8 +61,8 @@ const ExecButton = styled.a<{ isExec: boolean }>`
   border: ${(props) => props.isExec ? "3px solid #00d08d;" : "3px solid #b5b5b5;"}
   margin-left: 1rem;
   border-radius: 100%;
-  height: 6rem;
-  width: 6rem;
+  height: 7rem;
+  width: 7rem;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -69,7 +70,7 @@ const ExecButton = styled.a<{ isExec: boolean }>`
 
   div {
     padding: .5rem;
-    &:first-child { margin-top: 0; border-bottom: 1px solid gray; }
+    &:first-child { margin-top: .5rem; border-bottom: 1px solid gray; }
   }
 `;
 
@@ -91,7 +92,7 @@ const TodoInput: React.FC<TodoInputProps> = (props) => {
         </InputWrapper>
       ) : null}
 
-      {isShow ? (
+      {isShow && props.value ? (
         <ExecButton isExec={isExec} onClick={() => onClickExecButton()}>
           <div>Start</div>
           <div>Stop</div>

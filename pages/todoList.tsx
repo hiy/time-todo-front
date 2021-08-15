@@ -35,9 +35,6 @@ const TodayTitle = styled.h2`
   margin-bottom: 2rem;
 `
 
-const AddTodo = styled.div`
-  margin: 1rem 0;
-`
 const initialTimeRecord = {
   hours: '00',
   minutes: '00',
@@ -69,6 +66,15 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
     return TodoUseCase.update(newTodoList)
   })
 
+  const addEmptyTodo = () => {
+    todoList.push({
+      title: "",
+      isDone: false,
+      elapsedTime: 0,
+    })
+    setTodoList([...todoList])
+    updateMutation.mutate(todoList)
+  };
 
   const deleteTodo = (todoIdx: number) => {
     todoList.splice(todoIdx, 1);
@@ -86,12 +92,21 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
     }
   }, [query.isLoading, query.data])
 
-
   useEffect(() => {
     if (!createMutation.isLoading && createMutation.data) {
       setTodoList(createMutation.data)
     }
   }, [createMutation.isLoading, createMutation.data])
+
+  useEffect(() => {
+    if(todoList.length > 0) {
+      const emptyTodos = todoList.filter((todo) => {
+        if(!todo.title) return true;
+        return false
+      })
+      if(emptyTodos.length === 0) addEmptyTodo();
+    }
+  }, [todoList])
 
   const handleClickExecButton = (todoIdx: number) => {
     if (isExecTodo()) {
@@ -128,16 +143,6 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
     if (!confirm(`${todoList[todoIdx].title}を削除します。よろしいですか？`)) return;
     deleteTodo(todoIdx);
   }
-
-  const handleAddTodo = () => {
-    todoList.push({
-      title: "",
-      isDone: false,
-      elapsedTime: 0,
-    })
-    setTodoList([...todoList])
-    updateMutation.mutate(todoList)
-  };
 
   const startTodo = (todoIdx: number) => {
     initialTimeRecord.time = todoList[todoIdx].elapsedTime
@@ -177,29 +182,21 @@ const TodoList: React.FC<Props> = ({ todoListData }) => {
       <Main>
         <MainInner>
           <TodayTitle>{format(today, 'Y/MM/dd')}<hr /></TodayTitle>
-
           {todoList.map((t, i) => {
             return (
-              <div key={i}>
-                {isExecTodo() && i === execTodoIdx ? (<div>現在実行中のタスク</div>) : null}
-                <TodoInput
-                  key={i}
-                  type="text"
-                  value={t.title}
-                  onChange={(e) => handleChangeTodo(e, i)}
-                  onClickExecButton={() => handleClickExecButton(i)}
-                  onClickCheckBox={() => handleClickCheckBox(i)}
-                  onDelete={() => handleDeleteTodo(i)}
-                  isDone={t.isDone}
-                  isShow={i === execTodoIdx || execTodoIdx === null}
-                  isExec={isExecTodo() ? true : false} />
-              </div>
+              <TodoInput
+                key={i}
+                type="text"
+                value={t.title}
+                onChange={(e) => handleChangeTodo(e, i)}
+                onClickExecButton={() => handleClickExecButton(i)}
+                onClickCheckBox={() => handleClickCheckBox(i)}
+                onDelete={() => handleDeleteTodo(i)}
+                isDone={t.isDone}
+                isShow={i === execTodoIdx || execTodoIdx === null}
+                isExec={isExecTodo() ? true : false} />
             )
           })}
-
-          <AddTodo>
-            {isExecTodo() ? null : (<a onClick={handleAddTodo}><GrAdd /></a>)}
-          </AddTodo>
 
           <Timer
             isShow={isExecTodo() ? true : false}
