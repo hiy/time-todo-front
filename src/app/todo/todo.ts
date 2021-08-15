@@ -9,3 +9,15 @@ export class Todo {
     this.elapsedTime = elapsedTime;
   }
 }
+
+export class TodoChartData {
+  name: string;
+  value: number;
+  unit: string ;
+
+  constructor(name: string, value: number, unit: string) {
+    this.name = name;
+    this.value = value;
+    this.unit = unit;
+  }
+}

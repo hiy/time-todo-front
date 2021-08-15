@@ -4,44 +4,17 @@ import styled from 'styled-components'
 import HtmlHead from '../components/Head'
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
-import { Todo } from '../src/app/todo'
+import { Todo, TodoChartData } from '../src/app/todo'
 import TodoUseCase, { TodoSearchForm } from '../provider/todo'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Sector, Cell, ResponsiveContainer } from 'recharts';
-import { format } from 'date-fns'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieLabel, PieChart, Pie, Sector, Cell, ResponsiveContainer } from 'recharts';
+import { format, addMonths } from 'date-fns'
 
 const Title = styled.h2`
   font-size: 3rem;
   margin-bottom: 2rem;
 `
 
-// const Pidata = [
-//   { name: 'Group A', value: 400 },
-//   { name: 'Group B', value: 300 },
-//   { name: 'Group C', value: 300 },
-//   { name: 'Group D', value: 200 },
-// ];
-
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
-
-const RADIAN = Math.PI / 180;
-
-// const renderCustomizedLabel = ({ cx,
-//                                  cy,
-//                                  midAngle,
-//                                  innerRadius,
-//                                  outerRadius,
-//                                  percent,
-//                                  index }) => {
-//   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-//   const x = cx + radius * Math.cos(-midAngle * RADIAN);
-//   const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-//   return (
-//     <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
-//       {`${(percent * 100).toFixed(0)}%`}
-//     </text>
-//   );
-// };
 
 
 const data = [
@@ -103,49 +76,57 @@ const Main = styled.main`
   margin: 10rem 0;
 `
 
-const today = new Date();
+const YearMonthControl = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 12rem;
+`
 
-type TodoChartData = { name: string, value: number, unit: string }
+const YearMonthButton = styled.span`
+`
 
 export default function Dashboard() {
-  const [piData, setPiData] = useState<TodoChartData[]>([])
+  const [piData, setPiData] = useState<TodoChartData[]>([]);
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
-  const query = useQuery("searchTodoList", async (): Promise<Todo[]> => {
-    const year = format(today, 'Y')
-    const month = format(today, 'MM')
-    const day = format(today, 'dd')
-
-    const form = new TodoSearchForm(year, month, null);
-    return await TodoUseCase.search(form)
+  const query = useQuery("searchTodoList", async (): Promise<TodoChartData[]> => {
+    const year = format(currentDate, 'Y')
+    const month = format(currentDate, 'MM')
+    const form = new TodoSearchForm(year, month);
+    return await TodoUseCase.searchChartData(form)
   });
 
   useEffect(() => {
     if (!query.isLoading && query.data) {
       if (query.data.length > 0) {
-        const tmp: { [key: string]: number } = {}
-        for(const datum of query.data) {
-          if(!tmp[datum.title]) {
-            tmp[datum.title] = 0
-          }
-          tmp[datum.title] += datum.elapsedTime
-        }
-
-        const result: TodoChartData[] = Object.entries(tmp).map((entry) => {
-          return {name: entry[0], value: entry[1], unit: '秒'}
-        })
-
-        console.log(result)
-        setPiData(result)
+        setPiData(query.data)
+        return;
       }
+      setPiData([])
     }
   }, [query.isLoading, query.data])
 
+  useEffect(() => {
+    query.refetch();
+  }, [currentDate])
 
+  const RADIAN = Math.PI / 180;
+  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }: any) => {
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+    return (
+      <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+        {`${piData[index].name} ${(percent * 100).toFixed(0)}%`}
+      </text>
+    );
+  };
 
   if(query.isLoading) return (<>Loading...</>)
 
   return (
     <Container>
+
       <Main>
         <HtmlHead title={'Timer TODO'} />
 
@@ -153,52 +134,57 @@ export default function Dashboard() {
           <li><Link href="/todoList">Todoリスト</Link></li>
         </Nav>
 
-        <Title>{format(today, 'Y/MM')}<hr /></Title>
-        <p>前月へ</p>
-        <p>次月へ</p>
-        <br />
-        <LineChart
-          width={500}
-          height={300}
-          data={data}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }} >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Line type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} />
-          <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-        </LineChart>
+        <Title>{format(currentDate, 'Y/MM')}<hr /></Title>
+        <YearMonthControl>
+          <YearMonthButton className='pure-button' onClick={() => setCurrentDate(addMonths(currentDate, -1))}>前月へ</YearMonthButton>
+          <YearMonthButton className='pure-button' onClick={() => setCurrentDate(addMonths(currentDate, 1))}>次月へ</YearMonthButton>
+        </YearMonthControl>
 
-        <PieChart width={400} height={400}>
-          <Pie
-            data={piData}
-            cx="50%"
-            cy="50%"
-            labelLine={true}
-            outerRadius={180}
-            fill="#8884d8"
-            dataKey="value"
-            label
-          >
+        {piData.length === 0 ? (<p>データがありません。</p>) : (
+<div>
+<LineChart
+width={500}
+height={300}
+data={data}
+margin={{
+  top: 5,
+  right: 30,
+  left: 20,
+  bottom: 5,
+}} >
+<CartesianGrid strokeDasharray="3 3" />
+<XAxis dataKey="name" />
+<YAxis />
+<Tooltip />
+<Legend />
+<Line type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} />
+<Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+</LineChart>
+
+<PieChart width={500} height={400}>
+<Pie
+  data={piData}
+  cx="50%"
+  cy="50%"
+  labelLine={false}
+  outerRadius={180}
+  fill="#8884d8"
+  dataKey="value"
+  label={renderCustomizedLabel}
+>
+  {piData.map((entry, index) => (
+    <>
+      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} >
+      </Cell>
+    </>
+  ))}
+</Pie>
+<Tooltip />
+</PieChart>
+</div>
+        ) }
 
 
-            {piData.map((entry, index) => (
-              <>
-                        <Tooltip />
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              </>
-            ))}
-          </Pie>
-
-          <Tooltip />
-        </PieChart>
       </Main>
     </Container>
   )
